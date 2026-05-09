@@ -1,117 +1,558 @@
-<!doctype html>
-<html lang="zh-Hant">
+<!DOCTYPE html>
+<html lang="zh-TW">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>簡單貪吃蛇遊戲</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>IssacGood — Developer Portfolio</title>
+
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-P2T6JLX0Q8"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-P2T6JLX0Q8');
+  </script>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet"/>
+
   <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #111318;
+      --border: #1e2230;
+      --accent: #00e5a0;
+      --accent2: #0077ff;
+      --accent3: #ff4d6d;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --card-bg: #13161f;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: #0f1724;
-      height: 100vh;
-      color: white;
-      font-family: sans-serif;
-      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans TC', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
     }
-    h2 { margin-bottom: 10px; }
-    canvas {
-      border: 2px solid #3b82f6;
-      background: #1e293b;
+
+    /* ── Grid noise texture ── */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.02) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.02) 40px);
+      pointer-events: none;
+      z-index: 0;
     }
-    #score { margin-top: 10px; font-size: 18px; }
+
+    /* ── Ambient blobs ── */
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: .25;
+      pointer-events: none;
+      z-index: 0;
+    }
+    .blob-1 { width: 600px; height: 600px; background: var(--accent); top: -200px; left: -100px; animation: drift 18s ease-in-out infinite alternate; }
+    .blob-2 { width: 500px; height: 500px; background: var(--accent2); bottom: -200px; right: -100px; animation: drift 22s ease-in-out infinite alternate-reverse; }
+    @keyframes drift { from { transform: translate(0,0) scale(1); } to { transform: translate(60px,40px) scale(1.12); } }
+
+    /* ── Layout ── */
+    .wrap { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    /* ── Nav ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(20px);
+      background: rgba(10,12,16,.7);
+    }
+    .nav-inner {
+      display: flex; align-items: center; justify-content: space-between;
+      height: 60px;
+    }
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.1rem; font-weight: 800; letter-spacing: -.02em;
+      color: var(--accent); text-decoration: none;
+    }
+    .nav-links { display: flex; gap: 28px; }
+    .nav-links a {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem; color: var(--muted);
+      text-decoration: none; letter-spacing: .06em;
+      transition: color .2s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 100px 0 80px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    }
+    .hero-tag {
+      display: inline-block;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; letter-spacing: .18em;
+      color: var(--accent); border: 1px solid rgba(0,229,160,.3);
+      border-radius: 2px; padding: 4px 12px;
+      margin-bottom: 20px;
+      animation: fadein .6s ease both;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 800; line-height: 1.08;
+      letter-spacing: -.04em;
+      animation: fadein .6s .1s ease both;
+    }
+    .hero h1 span { color: var(--accent); }
+    .hero-desc {
+      margin-top: 20px;
+      font-size: .95rem; color: var(--muted); line-height: 1.75;
+      max-width: 440px;
+      animation: fadein .6s .2s ease both;
+    }
+    .hero-cta {
+      margin-top: 36px; display: flex; gap: 14px; flex-wrap: wrap;
+      animation: fadein .6s .3s ease both;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 11px 24px; border-radius: 4px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .82rem; font-weight: 500; letter-spacing: .05em;
+      text-decoration: none; cursor: pointer; border: none;
+      transition: all .2s;
+    }
+    .btn-primary { background: var(--accent); color: #000; }
+    .btn-primary:hover { background: #00ffc3; transform: translateY(-2px); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* ── Hero visual ── */
+    .hero-visual {
+      position: relative;
+      animation: fadein .8s .15s ease both;
+    }
+    .terminal {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 24px 80px rgba(0,0,0,.5);
+    }
+    .terminal-bar {
+      background: #1a1d27;
+      padding: 10px 16px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .dot { width: 12px; height: 12px; border-radius: 50%; }
+    .dot-r { background: #ff5f57; }
+    .dot-y { background: #febc2e; }
+    .dot-g { background: #28c840; }
+    .terminal-title { font-family: 'JetBrains Mono', monospace; font-size: .72rem; color: var(--muted); margin-left: 8px; }
+    .terminal-body { padding: 20px 22px; font-family: 'JetBrains Mono', monospace; font-size: .82rem; line-height: 1.9; }
+    .t-line { display: block; }
+    .t-prompt { color: var(--accent); }
+    .t-cmd { color: var(--text); }
+    .t-out { color: var(--muted); }
+    .t-hi { color: var(--accent2); }
+    .t-accent { color: var(--accent3); }
+    .cursor { display: inline-block; width: 8px; height: 14px; background: var(--accent); vertical-align: middle; animation: blink 1s step-end infinite; }
+    @keyframes blink { 50% { opacity: 0; } }
+
+    /* ── Stats bar ── */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(4,1fr);
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border); border-radius: 8px;
+      overflow: hidden; margin: 60px 0;
+      animation: fadein .6s .35s ease both;
+    }
+    .stat {
+      background: var(--card-bg);
+      padding: 24px 20px; text-align: center;
+      transition: background .2s;
+    }
+    .stat:hover { background: #171b26; }
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      color: var(--accent);
+    }
+    .stat-label { font-size: .78rem; color: var(--muted); margin-top: 4px; }
+
+    /* ── Section headings ── */
+    .section-head {
+      display: flex; align-items: baseline; gap: 16px;
+      margin-bottom: 36px;
+    }
+    .section-head h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.6rem; font-weight: 800; letter-spacing: -.03em;
+    }
+    .section-head .tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem; color: var(--muted); letter-spacing: .12em;
+    }
+
+    /* ── Projects grid ── */
+    .projects { margin: 70px 0; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      text-decoration: none;
+      color: inherit;
+      display: flex; flex-direction: column; gap: 12px;
+      transition: border-color .2s, transform .2s, box-shadow .2s;
+      position: relative; overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0); transform-origin: left;
+      transition: transform .3s;
+    }
+    .card:hover { border-color: rgba(0,229,160,.3); transform: translateY(-4px); box-shadow: 0 16px 48px rgba(0,0,0,.4); }
+    .card:hover::before { transform: scaleX(1); }
+
+    .card-top { display: flex; align-items: flex-start; justify-content: space-between; }
+    .card-icon { font-size: 1.4rem; }
+    .card-lang {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem; color: var(--muted);
+      border: 1px solid var(--border);
+      padding: 2px 8px; border-radius: 2px;
+    }
+    .card-name {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem; font-weight: 700;
+    }
+    .card-desc { font-size: .85rem; color: var(--muted); line-height: 1.6; flex: 1; }
+    .card-footer {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 4px;
+    }
+    .card-updated {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .68rem; color: var(--muted);
+    }
+    .card-arrow { color: var(--accent); font-size: 1rem; transition: transform .2s; }
+    .card:hover .card-arrow { transform: translate(4px,-4px); }
+
+    /* ── Skills / Tech ── */
+    .skills { margin: 70px 0; }
+    .skill-grid { display: flex; flex-wrap: wrap; gap: 10px; }
+    .skill-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .78rem;
+      padding: 7px 16px; border-radius: 4px;
+      border: 1px solid var(--border);
+      background: var(--card-bg);
+      color: var(--text);
+      transition: all .2s;
+    }
+    .skill-pill:hover { border-color: var(--accent); color: var(--accent); }
+    .skill-pill.hi { border-color: rgba(0,229,160,.4); color: var(--accent); }
+
+    /* ── Contact / Footer ── */
+    .contact {
+      margin: 70px 0 40px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 52px 48px;
+      text-align: center;
+    }
+    .contact h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 2rem; font-weight: 800;
+      letter-spacing: -.03em; margin-bottom: 12px;
+    }
+    .contact p { color: var(--muted); margin-bottom: 28px; line-height: 1.7; }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .72rem; color: var(--muted);
+    }
+
+    @keyframes fadein { from { opacity:0; transform: translateY(18px); } to { opacity:1; transform: none; } }
+
+    @media(max-width: 768px) {
+      .hero { grid-template-columns: 1fr; gap: 40px; padding: 60px 0 40px; }
+      .stats-bar { grid-template-columns: repeat(2,1fr); }
+      .contact { padding: 36px 24px; }
+    }
   </style>
 </head>
 <body>
-  <h2>🐍 簡單貪吃蛇遊戲</h2>
-  <canvas id="game" width="400" height="400"></canvas>
-  <div id="score">分數：0</div>
 
-  <script>
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-    const box = 20; // 每格大小
-    let snake = [{ x: 9 * box, y: 10 * box }];
-    let direction = null;
-    let food = randomFood();
-    let score = 0;
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
 
-    function randomFood() {
-      return {
-        x: Math.floor(Math.random() * 20) * box,
-        y: Math.floor(Math.random() * 20) * box
-      };
-    }
+<!-- ── Nav ── -->
+<nav>
+  <div class="wrap nav-inner">
+    <a class="nav-logo" href="#">IssacGood</a>
+    <div class="nav-links">
+      <a href="#projects">Projects</a>
+      <a href="#skills">Skills</a>
+      <a href="#contact">Contact</a>
+      <a href="https://github.com/IssacGood" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'social',event_label:'github_nav'})">GitHub ↗</a>
+    </div>
+  </div>
+</nav>
 
-    document.addEventListener('keydown', e => {
-      if (e.key === 'ArrowLeft' && direction !== 'RIGHT') direction = 'LEFT';
-      else if (e.key === 'ArrowUp' && direction !== 'DOWN') direction = 'UP';
-      else if (e.key === 'ArrowRight' && direction !== 'LEFT') direction = 'RIGHT';
-      else if (e.key === 'ArrowDown' && direction !== 'UP') direction = 'DOWN';
+<!-- ── Hero ── -->
+<div class="wrap">
+  <section class="hero">
+    <div>
+      <div class="hero-tag">DEVELOPER · MAKER · EXPLORER</div>
+      <h1>Hi, I'm <span>IssacGood</span>.<br/>I build things for the web.</h1>
+      <p class="hero-desc">
+        專注於 AI 應用、金融數據分析與全端開發。從台灣期貨儀表板到車牌辨識系統，
+        每個 repo 都是一段探索的旅程。
+      </p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#projects" onclick="gtag('event','click',{event_category:'hero',event_label:'view_projects'})">View Projects ↓</a>
+        <a class="btn btn-outline" href="https://github.com/IssacGood" target="_blank" rel="noopener" onclick="gtag('event','click',{event_category:'hero',event_label:'github_profile'})">GitHub Profile ↗</a>
+      </div>
+    </div>
+    <div class="hero-visual">
+      <div class="terminal">
+        <div class="terminal-bar">
+          <span class="dot dot-r"></span>
+          <span class="dot dot-y"></span>
+          <span class="dot dot-g"></span>
+          <span class="terminal-title">~/IssacGood</span>
+        </div>
+        <div class="terminal-body">
+          <span class="t-line"><span class="t-prompt">❯</span> <span class="t-cmd">whoami</span></span>
+          <span class="t-line t-out">IssacGood — Full-Stack Developer</span>
+          <span class="t-line"> </span>
+          <span class="t-line"><span class="t-prompt">❯</span> <span class="t-cmd">cat skills.json</span></span>
+          <span class="t-line t-out">{</span>
+          <span class="t-line t-out">&nbsp;&nbsp;<span class="t-hi">"ai"</span>: ["YOLO", "CV", "NLP"],</span>
+          <span class="t-line t-out">&nbsp;&nbsp;<span class="t-hi">"finance"</span>: ["TWstock","Futures"],</span>
+          <span class="t-line t-out">&nbsp;&nbsp;<span class="t-hi">"web"</span>: ["HTML","JS","Python"]</span>
+          <span class="t-line t-out">}</span>
+          <span class="t-line"> </span>
+          <span class="t-line"><span class="t-prompt">❯</span> <span class="t-cmd">git log --oneline -3</span></span>
+          <span class="t-line t-out"><span class="t-accent">a3f9c1e</span> feat: AU-AI-Lab update</span>
+          <span class="t-line t-out"><span class="t-accent">b7e22d0</span> fix: futures-dashboard chart</span>
+          <span class="t-line t-out"><span class="t-accent">c10fa3b</span> add: TWstock realtime feed</span>
+          <span class="t-line"> </span>
+          <span class="t-line"><span class="t-prompt">❯</span> <span class="cursor"></span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Stats ── -->
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num">12+</div><div class="stat-label">Public Repos</div></div>
+    <div class="stat"><div class="stat-num">AI</div><div class="stat-label">Core Focus</div></div>
+    <div class="stat"><div class="stat-num">TW</div><div class="stat-label">Based in Taiwan</div></div>
+    <div class="stat"><div class="stat-num">∞</div><div class="stat-label">Curiosity</div></div>
+  </div>
+
+  <!-- ── Projects ── -->
+  <section class="projects" id="projects">
+    <div class="section-head">
+      <h2>Projects</h2>
+      <span class="tag">// ALL REPOS</span>
+    </div>
+    <div class="grid" id="project-grid">
+
+      <a class="card" href="https://github.com/IssacGood/AU-AI-Lab" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'AU-AI-Lab'})">
+        <div class="card-top"><span class="card-icon">🤖</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">AU-AI-Lab</div>
+        <div class="card-desc">AI 實驗室專案，探索人工智慧應用與工具整合，持續更新中的研究平台。</div>
+        <div class="card-footer"><span class="card-updated">Updated 12 min ago</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/IssacGood.github.io" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'github.io'})">
+        <div class="card-top"><span class="card-icon">🌐</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">IssacGood.github.io</div>
+        <div class="card-desc">個人 GitHub Pages 網站，作為開發者個人品牌與作品集的展示平台。</div>
+        <div class="card-footer"><span class="card-updated">Updated 21 min ago</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/TWstock" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'TWstock'})">
+        <div class="card-top"><span class="card-icon">📈</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">TWstock</div>
+        <div class="card-desc">台灣股市資料視覺化工具，即時追蹤股價走勢、成交量與技術指標。</div>
+        <div class="card-footer"><span class="card-updated">Updated yesterday</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/futures-dashboard" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'futures-dashboard'})">
+        <div class="card-top"><span class="card-icon">📊</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">futures-dashboard</div>
+        <div class="card-desc">期貨交易儀表板，整合多項市場數據，提供清晰的期貨行情監控介面。</div>
+        <div class="card-footer"><span class="card-updated">Updated yesterday</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/MyPractice" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'MyPractice'})">
+        <div class="card-top"><span class="card-icon">💻</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">MyPractice</div>
+        <div class="card-desc">日常練習與學習筆記的程式碼倉庫，記錄各種技術實驗與概念驗證。</div>
+        <div class="card-footer"><span class="card-updated">Updated 3 days ago</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/ShowPicture" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'ShowPicture'})">
+        <div class="card-top"><span class="card-icon">🖼️</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">ShowPicture</div>
+        <div class="card-desc">圖片展示應用，提供簡潔優雅的圖像瀏覽與呈現體驗。</div>
+        <div class="card-footer"><span class="card-updated">Updated last week</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/MyMonitor" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'MyMonitor'})">
+        <div class="card-top"><span class="card-icon">🖥️</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">MyMonitor</div>
+        <div class="card-desc">個人監控系統，用於追蹤各類系統狀態與數據變化的即時儀表板。</div>
+        <div class="card-footer"><span class="card-updated">Updated last week</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/future-training" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'future-training'})">
+        <div class="card-top"><span class="card-icon">🎯</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">future-training</div>
+        <div class="card-desc">期貨交易策略訓練工具，結合回測分析幫助理解市場規律與交易邏輯。</div>
+        <div class="card-footer"><span class="card-updated">Updated 2 weeks ago</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/Trip" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'Trip'})">
+        <div class="card-top"><span class="card-icon">✈️</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">Trip</div>
+        <div class="card-desc">旅遊行程規劃應用，整合地圖與行程管理，打造完整的旅遊體驗記錄。</div>
+        <div class="card-footer"><span class="card-updated">Updated last month</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/PttAnalyzer" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'PttAnalyzer'})">
+        <div class="card-top"><span class="card-icon">📝</span><span class="card-lang">HTML</span></div>
+        <div class="card-name">PttAnalyzer</div>
+        <div class="card-desc">PTT 文章分析工具，自動爬取並分析看板討論趨勢，洞察社群輿情動態。</div>
+        <div class="card-footer"><span class="card-updated">Updated last month</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/License-plate-recognition-system" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'license-plate'})">
+        <div class="card-top"><span class="card-icon">🚗</span><span class="card-lang">Python</span></div>
+        <div class="card-name">License Plate Recognition</div>
+        <div class="card-desc">基於 YOLOv8 的車牌辨識系統，結合 Webduino 即時顯示辨識結果，⭐ 1</div>
+        <div class="card-footer"><span class="card-updated">Jan 26, 2025</span><span class="card-arrow">↗</span></div>
+      </a>
+
+      <a class="card" href="https://github.com/IssacGood/SDN-Practice-TrafficMonitor" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'project',event_label:'SDN'})">
+        <div class="card-top"><span class="card-icon">🌐</span><span class="card-lang">Python</span></div>
+        <div class="card-name">SDN Traffic Monitor</div>
+        <div class="card-desc">SDN 軟體定義網路流量監控實作，Fork 1，探索網路可程式化架構的學術實驗。</div>
+        <div class="card-footer"><span class="card-updated">Aug 1, 2018</span><span class="card-arrow">↗</span></div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ── Skills ── -->
+  <section class="skills" id="skills">
+    <div class="section-head">
+      <h2>Tech Stack</h2>
+      <span class="tag">// TOOLS &amp; LANGUAGES</span>
+    </div>
+    <div class="skill-grid">
+      <span class="skill-pill hi">Python</span>
+      <span class="skill-pill hi">JavaScript</span>
+      <span class="skill-pill hi">HTML / CSS</span>
+      <span class="skill-pill">YOLOv8</span>
+      <span class="skill-pill">OpenCV</span>
+      <span class="skill-pill hi">AI / ML</span>
+      <span class="skill-pill">SDN / Ryu</span>
+      <span class="skill-pill">Webduino</span>
+      <span class="skill-pill hi">Data Visualization</span>
+      <span class="skill-pill">台灣股市 API</span>
+      <span class="skill-pill">期貨分析</span>
+      <span class="skill-pill">Web Scraping</span>
+      <span class="skill-pill">PTT 爬蟲</span>
+      <span class="skill-pill hi">GitHub Pages</span>
+      <span class="skill-pill">REST API</span>
+      <span class="skill-pill">即時數據串流</span>
+    </div>
+  </section>
+
+  <!-- ── Contact ── -->
+  <section class="contact" id="contact">
+    <h2>Let's <span style="color:var(--accent)">Connect</span></h2>
+    <p>對 AI 應用、金融數據或任何有趣的專案有想法？<br/>歡迎到 GitHub 找我！</p>
+    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+      <a class="btn btn-primary" href="https://github.com/IssacGood" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'contact',event_label:'github'})">
+        GitHub Profile ↗
+      </a>
+      <a class="btn btn-outline" href="https://github.com/IssacGood?tab=repositories" target="_blank" rel="noopener"
+         onclick="gtag('event','click',{event_category:'contact',event_label:'all_repos'})">
+        All Repositories
+      </a>
+    </div>
+  </section>
+</div>
+
+<!-- ── Footer ── -->
+<footer>
+  <div class="wrap">
+    © 2025 IssacGood — Built with ❤ &amp; tracked with Google Analytics (G-P2T6JLX0Q8)
+  </div>
+</footer>
+
+<script>
+  // Track scroll depth
+  let tracked = {};
+  window.addEventListener('scroll', () => {
+    const pct = Math.round((window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100);
+    [25,50,75,100].forEach(m => {
+      if (pct >= m && !tracked[m]) {
+        tracked[m] = true;
+        gtag('event', 'scroll_depth', { event_category: 'engagement', event_label: m + '%' });
+      }
     });
+  });
 
-    function draw() {
-      ctx.fillStyle = '#1e293b';
-      ctx.fillRect(0, 0, 400, 400);
+  // Track time on page
+  setTimeout(() => gtag('event','time_on_page',{event_category:'engagement',event_label:'30s'}), 30000);
+  setTimeout(() => gtag('event','time_on_page',{event_category:'engagement',event_label:'60s'}), 60000);
+</script>
 
-      // 畫食物
-      ctx.fillStyle = '#ef4444';
-      ctx.fillRect(food.x, food.y, box, box);
-
-      // 畫蛇
-      for (let i = 0; i < snake.length; i++) {
-        ctx.fillStyle = i === 0 ? '#3b82f6' : '#60a5fa';
-        ctx.fillRect(snake[i].x, snake[i].y, box - 1, box - 1);
-      }
-
-      let headX = snake[0].x;
-      let headY = snake[0].y;
-
-      if (direction === 'LEFT') headX -= box;
-      if (direction === 'UP') headY -= box;
-      if (direction === 'RIGHT') headX += box;
-      if (direction === 'DOWN') headY += box;
-
-      // 撞牆重來
-      if (headX < 0 || headY < 0 || headX >= 400 || headY >= 400) {
-        resetGame();
-        return;
-      }
-
-      // 撞到自己重來
-      for (let i = 1; i < snake.length; i++) {
-        if (headX === snake[i].x && headY === snake[i].y) {
-          resetGame();
-          return;
-        }
-      }
-
-      let newHead = { x: headX, y: headY };
-
-      // 吃食物
-      if (headX === food.x && headY === food.y) {
-        score++;
-        document.getElementById('score').textContent = '分數：' + score;
-        food = randomFood();
-      } else {
-        snake.pop();
-      }
-
-      snake.unshift(newHead);
-    }
-
-    function resetGame() {
-      alert('遊戲結束！你的分數：' + score);
-      snake = [{ x: 9 * box, y: 10 * box }];
-      direction = null;
-      food = randomFood();
-      score = 0;
-      document.getElementById('score').textContent = '分數：0';
-    }
-
-    setInterval(draw, 120);
-  </script>
 </body>
 </html>
