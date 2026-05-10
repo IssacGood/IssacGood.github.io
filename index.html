@@ -260,6 +260,27 @@
     .card-arrow { color: var(--accent); font-size: 1rem; transition: transform .2s; }
     .card:hover .card-arrow { transform: translate(4px,-4px); }
 
+    /* ── Dual action buttons inside card ── */
+    .card-links {
+      display: flex; gap: 8px; margin-top: 6px;
+    }
+    .card-btn {
+      display: inline-flex; align-items: center; gap: 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .7rem; letter-spacing: .04em;
+      padding: 6px 12px; border-radius: 3px;
+      text-decoration: none; border: 1px solid var(--border);
+      transition: all .2s; flex: 1; justify-content: center;
+    }
+    .card-btn-demo {
+      background: var(--accent); color: #000; border-color: var(--accent);
+    }
+    .card-btn-demo:hover { background: #00ffc3; border-color: #00ffc3; transform: translateY(-1px); }
+    .card-btn-gh {
+      background: transparent; color: var(--muted);
+    }
+    .card-btn-gh:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-1px); }
+
     /* ── Skills / Tech ── */
     .skills { margin: 70px 0; }
     .skill-grid { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -387,101 +408,173 @@
     </div>
     <div class="grid" id="project-grid">
 
-      <a class="card" href="https://github.com/IssacGood/AU-AI-Lab" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'AU-AI-Lab'})">
+      <!-- AU-AI-Lab -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">🤖</span><span class="card-lang">HTML</span></div>
         <div class="card-name">AU-AI-Lab</div>
         <div class="card-desc">AI 實驗室專案，探索人工智慧應用與工具整合，持續更新中的研究平台。</div>
-        <div class="card-footer"><span class="card-updated">Updated 12 min ago</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated 12 min ago</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/AU-AI-Lab/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'AU-AI-Lab'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/AU-AI-Lab" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'AU-AI-Lab'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/IssacGood.github.io" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'github.io'})">
+      <!-- IssacGood.github.io -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">🌐</span><span class="card-lang">HTML</span></div>
         <div class="card-name">IssacGood.github.io</div>
         <div class="card-desc">個人 GitHub Pages 網站，作為開發者個人品牌與作品集的展示平台。</div>
-        <div class="card-footer"><span class="card-updated">Updated 21 min ago</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated 21 min ago</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'github.io'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/IssacGood.github.io" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'github.io'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/TWstock" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'TWstock'})">
+      <!-- TWstock -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">📈</span><span class="card-lang">HTML</span></div>
         <div class="card-name">TWstock</div>
         <div class="card-desc">台灣股市資料視覺化工具，即時追蹤股價走勢、成交量與技術指標。</div>
-        <div class="card-footer"><span class="card-updated">Updated yesterday</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated yesterday</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/TWstock/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'TWstock'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/TWstock" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'TWstock'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/futures-dashboard" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'futures-dashboard'})">
+      <!-- futures-dashboard -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">📊</span><span class="card-lang">HTML</span></div>
         <div class="card-name">futures-dashboard</div>
         <div class="card-desc">期貨交易儀表板，整合多項市場數據，提供清晰的期貨行情監控介面。</div>
-        <div class="card-footer"><span class="card-updated">Updated yesterday</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated yesterday</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/futures-dashboard/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'futures-dashboard'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/futures-dashboard" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'futures-dashboard'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/MyPractice" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'MyPractice'})">
+      <!-- MyPractice -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">💻</span><span class="card-lang">HTML</span></div>
         <div class="card-name">MyPractice</div>
         <div class="card-desc">日常練習與學習筆記的程式碼倉庫，記錄各種技術實驗與概念驗證。</div>
-        <div class="card-footer"><span class="card-updated">Updated 3 days ago</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated 3 days ago</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/MyPractice/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'MyPractice'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/MyPractice" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'MyPractice'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/ShowPicture" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'ShowPicture'})">
+      <!-- ShowPicture -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">🖼️</span><span class="card-lang">HTML</span></div>
         <div class="card-name">ShowPicture</div>
         <div class="card-desc">圖片展示應用，提供簡潔優雅的圖像瀏覽與呈現體驗。</div>
-        <div class="card-footer"><span class="card-updated">Updated last week</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated last week</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/ShowPicture/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'ShowPicture'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/ShowPicture" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'ShowPicture'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/MyMonitor" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'MyMonitor'})">
+      <!-- MyMonitor -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">🖥️</span><span class="card-lang">HTML</span></div>
         <div class="card-name">MyMonitor</div>
         <div class="card-desc">個人監控系統，用於追蹤各類系統狀態與數據變化的即時儀表板。</div>
-        <div class="card-footer"><span class="card-updated">Updated last week</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated last week</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/MyMonitor/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'MyMonitor'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/MyMonitor" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'MyMonitor'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/future-training" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'future-training'})">
+      <!-- future-training -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">🎯</span><span class="card-lang">HTML</span></div>
         <div class="card-name">future-training</div>
         <div class="card-desc">期貨交易策略訓練工具，結合回測分析幫助理解市場規律與交易邏輯。</div>
-        <div class="card-footer"><span class="card-updated">Updated 2 weeks ago</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated 2 weeks ago</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/future-training/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'future-training'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/future-training" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'future-training'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/Trip" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'Trip'})">
+      <!-- Trip -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">✈️</span><span class="card-lang">HTML</span></div>
         <div class="card-name">Trip</div>
         <div class="card-desc">旅遊行程規劃應用，整合地圖與行程管理，打造完整的旅遊體驗記錄。</div>
-        <div class="card-footer"><span class="card-updated">Updated last month</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated last month</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/Trip/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'Trip'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/Trip" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'Trip'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/PttAnalyzer" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'PttAnalyzer'})">
+      <!-- PttAnalyzer -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">📝</span><span class="card-lang">HTML</span></div>
         <div class="card-name">PttAnalyzer</div>
         <div class="card-desc">PTT 文章分析工具，自動爬取並分析看板討論趨勢，洞察社群輿情動態。</div>
-        <div class="card-footer"><span class="card-updated">Updated last month</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Updated last month</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/PttAnalyzer/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'PttAnalyzer'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/PttAnalyzer" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'PttAnalyzer'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/License-plate-recognition-system" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'license-plate'})">
+      <!-- License Plate Recognition -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">🚗</span><span class="card-lang">Python</span></div>
         <div class="card-name">License Plate Recognition</div>
         <div class="card-desc">基於 YOLOv8 的車牌辨識系統，結合 Webduino 即時顯示辨識結果，⭐ 1</div>
-        <div class="card-footer"><span class="card-updated">Jan 26, 2025</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Jan 26, 2025</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/License-plate-recognition-system/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'license-plate'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/License-plate-recognition-system" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'license-plate'})">⌥ GitHub</a>
+        </div>
+      </div>
 
-      <a class="card" href="https://github.com/IssacGood/SDN-Practice-TrafficMonitor" target="_blank" rel="noopener"
-         onclick="gtag('event','click',{event_category:'project',event_label:'SDN'})">
+      <!-- SDN Traffic Monitor -->
+      <div class="card">
         <div class="card-top"><span class="card-icon">🌐</span><span class="card-lang">Python</span></div>
         <div class="card-name">SDN Traffic Monitor</div>
         <div class="card-desc">SDN 軟體定義網路流量監控實作，Fork 1，探索網路可程式化架構的學術實驗。</div>
-        <div class="card-footer"><span class="card-updated">Aug 1, 2018</span><span class="card-arrow">↗</span></div>
-      </a>
+        <div class="card-updated" style="margin-top:4px">Aug 1, 2018</div>
+        <div class="card-links">
+          <a class="card-btn card-btn-demo" href="https://issacgood.github.io/SDN-Practice-TrafficMonitor/" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'demo',event_label:'SDN'})">▶ Demo</a>
+          <a class="card-btn card-btn-gh" href="https://github.com/IssacGood/SDN-Practice-TrafficMonitor" target="_blank" rel="noopener"
+             onclick="gtag('event','click',{event_category:'github',event_label:'SDN'})">⌥ GitHub</a>
+        </div>
+      </div>
 
     </div>
   </section>
